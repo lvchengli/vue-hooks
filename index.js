@@ -46,13 +46,14 @@ export function useEffect(rawEffect, deps) {
 
     currentInstance.$on('hook:mounted', injectedEffect)
     currentInstance.$on('hook:destroyed', injectedCleanup)
-    if (!deps) {
+    if (!deps || (deps && deps.length > 0)) {
       currentInstance.$on('hook:updated', injectedEffect)
     }
   } else {
     const { effect, deps: prevDeps = [] } = currentInstance._effectStore[id]
     if (!deps || deps.some((d, i) => d !== prevDeps[i])) {
       effect.current = rawEffect
+      currentInstance._effectStore[id].deps = deps
     } else {
       effect.current = null
     }
